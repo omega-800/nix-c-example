@@ -1,5 +1,5 @@
 {
-  description = "c development environment";
+  description = "nix-c-example";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
@@ -22,18 +22,50 @@
     in
     {
       devShells = eachSystem (pkgs: {
-        # TODO: add default devshell
+        default = pkgs.mkShellNoCC {
+          packages = with pkgs; [
+            cmake
+            gcc
+            gdb
+            curl
+          ];
+        };
       });
 
-      packages = eachSystem (
-        pkgs:
-        {
-        # TODO: add default package from the code in this repository
-        }
-      );
+      packages = eachSystem (pkgs: {
+        default =
+          let
+            fs = pkgs.lib.fileset;
+          in
+          pkgs.stdenvNoCC.mkDerivation {
+            name = "nix-c-example";
+            version = "1.0.0";
+            nativeBuildInputs = with pkgs; [ gcc ];
+            buildInputs = with pkgs; [ curl ];
+            src = fs.toSource {
+              root = ./.;
+              fileset = fs.unions [
+                ./Makefile
+                ./src/main.c
+              ];
+            };
+            installPhase = ''
+              runHook preInstall
+
+              mkdir -p $out/bin
+              make
+              mv nix-c-example $out/bin
+
+              runHook postInstall
+            '';
+          };
+      });
 
       apps = eachSystem (pkgs: {
-        # TODO: add default app to run the previously declared package
+        default = {
+          type = "app";
+          program = "${self.packages.${pkgs.system}.default}/bin/nix-c-example";
+        };
       });
     };
 }

@@ -1,5 +1,6 @@
 result
 .direnv
+nix-c-example
 *.d
 *.o
 *.ko
