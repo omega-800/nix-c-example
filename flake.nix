@@ -40,6 +40,7 @@
           pkgs.stdenvNoCC.mkDerivation {
             name = "nix-c-example";
             version = "1.0.0";
+            strictDeps = true;
             nativeBuildInputs = with pkgs; [ gcc ];
             buildInputs = with pkgs; [ curl ];
             src = fs.toSource {
