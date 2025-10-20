@@ -1,6 +1,6 @@
 .PHONY: all test clean
 
 all: 
-	$(CC) src/*.c -std=c99 -o nix-raylib-example -Wall -Wextra -Werror -fsanitize=address -g3 -lm $(pkg-config --cflags raylib) -lraylib
+	gcc src/*.c -std=c99 -o nix-c-example -Wall -Wextra -Werror -fsanitize=address -g3 -lm -lcurl
 clean: 
-	rm nix-raylib-example
+	rm nix-c-example
